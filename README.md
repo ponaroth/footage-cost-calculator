@@ -15,7 +15,7 @@ Zoom with the mouse wheel or trackpad, or with the + / − / Fit buttons. Drag t
 
 ## Prices
 
-Default prices live in [`src/items.js`](src/items.js). **They are placeholders.** Only 34.5kV Cable ($200/ft) is a known value, and everything else is $0 until real prices are added. Users can also override prices and units on their own computer with *Change cost values…*.
+Default prices live in [`src/items.js`](src/items.js). **They are demo placeholders, not real rates.** Only 34.5kV Cable ($200/ft) is a known value. Every other price is a made-up number for demos until the client's prices are added. Users can also override prices and units on their own computer with *Change cost values…*.
 
 ## Development
 
