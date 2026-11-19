@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>Footage Cost Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <main class="stage" id="stage">
+      <canvas id="canvas"></canvas>
+      <div class="empty" id="empty">
+        <div class="empty-card">
+          <h2>Load a plan image to start</h2>
+          <p>Choose a file, drag one onto this area, or paste a screenshot with Ctrl+V (⌘V on Mac).</p>
+        </div>
+      </div>
+      <div class="toast" id="toast" hidden></div>
+      <div class="zoom-bar">
+        <button id="zoomOut" title="Zoom out (-)">−</button>
+        <span id="zoomLabel">100%</span>
+        <button id="zoomIn" title="Zoom in (+)">+</button>
+        <button id="zoomFit" title="Fit to window (0)">Fit</button>
+      </div>
+      <div class="hint" id="hint">Scroll to zoom · drag to pan · click to place points</div>
+    </main>
+
+    <aside class="sidebar">
+      <header class="brand">
+        <h1>Footage Cost Calculator</h1>
+        <input id="projectName" class="project-name" placeholder="Project name (optional)">
+      </header>
+
+      <section class="panel">
+        <h3><span class="num">01</span>Image</h3>
+        <div class="row">
+          <label class="btn btn-light file-btn">Choose file
+            <input type="file" id="fileInput" accept="image/*" hidden>
+          </label>
+          <button class="btn btn-teal" id="pasteBtn">Paste copied image</button>
+        </div>
+        <p class="muted small" id="imageStatus">No image loaded.</p>
+      </section>
+
+      <section class="panel">
+        <h3><span class="num">02</span>Scale calibration</h3>
+        <button class="btn btn-blue full" id="calibrateBtn">Start scale calibration</button>
+        <label class="field">Known length between the two points (ft)
+          <input type="number" id="scaleFeet" min="0" step="any" value="100">
+        </label>
+        <button class="btn btn-teal full" id="applyCalBtn">Apply calibration</button>
+        <p class="small"><span class="muted">Feet per pixel:</span> <strong id="fppLabel">not set</strong></p>
+      </section>
+
+      <section class="panel">
+        <h3><span class="num">03</span>Material &amp; equipment</h3>
+        <label class="field">Cost item
+          <select id="itemSelect"></select>
+        </label>
+        <button class="btn btn-teal full" id="newRunBtn">Start new run / group</button>
+        <label class="field">Add points to
+          <select id="runSelect"></select>
+        </label>
+        <div class="row">
+          <button class="btn btn-light" id="undoBtn" title="Ctrl+Z">Undo last point</button>
+          <button class="btn btn-warn" id="clearBtn">Clear all</button>
+        </div>
+        <button class="btn btn-link" id="pricesBtn">Change cost values…</button>
+      </section>
+
+      <section class="panel">
+        <h3><span class="num">04</span>Estimate summary</h3>
+        <div id="runList" class="run-list"></div>
+        <div class="totals">
+          <div class="total-line"><span>Total cost</span><strong id="totalCost">$0.00</strong></div>
+          <div class="total-line contingency">
+            <span>Total + <input type="number" id="contingency" min="0" step="any" value="30">% contingency</span>
+            <strong id="totalWithCont">$0.00</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3><span class="num">05</span>Export</h3>
+        <div class="row">
+          <button class="btn btn-navy" id="pdfBtn">Export PDF</button>
+          <button class="btn btn-green" id="xlsxBtn">Export Excel</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- Prices dialog -->
+  <dialog id="pricesDialog" class="dialog">
+    <form method="dialog">
+      <h2>Cost values</h2>
+      <p class="muted small">Default prices are demo placeholders, not real rates (only 34.5kV Cable at $200/ft is known). Changes are saved on this computer.</p>
+      <div class="table-wrap">
+        <table class="price-table">
+          <thead><tr><th>Item</th><th>Unit</th><th>Price (USD)</th></tr></thead>
+          <tbody id="priceRows"></tbody>
+        </table>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-light" id="resetPricesBtn">Reset to defaults</button>
+        <span class="spacer"></span>
+        <button value="cancel" class="btn btn-light">Cancel</button>
+        <button value="save" class="btn btn-navy" id="savePricesBtn">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- PDF paper size dialog -->
+  <dialog id="pdfDialog" class="dialog narrow">
+    <form method="dialog">
+      <h2>Choose PDF paper size</h2>
+      <p class="muted small">The plan keeps its proportions and the cost breakdown sits on the right.</p>
+      <label class="radio"><input type="radio" name="paper" value="letter"> 8.5 × 11 in <span class="muted">landscape</span></label>
+      <label class="radio"><input type="radio" name="paper" value="tabloid" checked> 11 × 17 in <span class="muted">landscape</span></label>
+      <label class="radio"><input type="radio" name="paper" value="arch"> 22 × 32 in <span class="muted">landscape</span></label>
+      <div class="dialog-actions">
+        <span class="spacer"></span>
+        <button value="cancel" class="btn btn-light">Cancel</button>
+        <button value="export" class="btn btn-navy">Export PDF</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="vendor/jspdf.umd.min.js"></script>
+  <script src="vendor/exceljs.min.js"></script>
+  <script src="items.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
