@@ -1,0 +1,50 @@
+{
+  "name": "footage-cost-calculator",
+  "productName": "Footage Cost Calculator",
+  "version": "1.0.0",
+  "description": "Estimate cable and equipment costs by drawing runs on a scaled plan image.",
+  "main": "main.js",
+  "author": "Dean",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --publish never",
+    "dist:win": "electron-builder --win --publish never",
+    "dist:mac": "electron-builder --mac --publish never",
+    "vendor": "node scripts/copy-vendor.js"
+  },
+  "build": {
+    "appId": "com.footagecost.calculator",
+    "productName": "Footage Cost Calculator",
+    "files": [
+      "main.js",
+      "src/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0",
+    "exceljs": "^4.4.0",
+    "jspdf": "^4.2.1"
+  }
+}
